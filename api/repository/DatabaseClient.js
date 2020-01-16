@@ -68,7 +68,7 @@ const dbClient = (connection) => {
     try {
       console.log(limit);
       const query = client.prepare(sql);
-      const results = query.all({pageParams, limit, offset});
+      const results = query.all({ pageParams, limit, offset });
       return results;
     } catch (error) {
       console.log(error);

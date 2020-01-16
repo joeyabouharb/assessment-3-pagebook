@@ -3,7 +3,7 @@ const constraints = {
     presence: true,
     format: {
       pattern: /^[a-zA-Z-\s]+$/,
-      message: () => 'input not valid'
+      message: () => 'input not valid',
     },
     length: {
       minimum: 3,
@@ -15,14 +15,14 @@ const constraints = {
     presence: true,
     format: {
       pattern: /^.{8,64}$/,
-      message: () => 'input not valid'
+      message: () => 'input not valid',
     },
     length: {
       minimum: 8,
       maximum: 64,
     },
     type: 'string',
-  }
-}
+  },
+};
 
 module.exports = Object.freeze(constraints);

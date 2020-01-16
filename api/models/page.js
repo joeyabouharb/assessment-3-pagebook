@@ -22,7 +22,7 @@ const create = async (page) => {
   const result = await validate.async(page, constraints)
     .catch((error) => ({ error }));
   if (result.error) {
-    return { error: page.error, status: 400 };
+    return { error: result.error, status: 400 };
   }
   return Page(result);
 };

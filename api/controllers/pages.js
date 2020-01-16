@@ -3,6 +3,7 @@ const PageRepository = require('../repository/PageRepository');
 const createPage = (req, res) => {
   const pageRepository = PageRepository();
   const { Page } = req;
+  console.log(Page);
   const result = pageRepository.createPage(Page);
   if (result.error) {
     const { status } = result;
@@ -24,7 +25,7 @@ const deletePage = (req, res) => {
 const getPages = (req, res) => {
   const pageRepository = PageRepository();
   const { PageQuery } = req;
-  const result = pageRepository.retrievePages(PageQuery);
+  const result = pageRepository.retrievePages(PageQuery );
   if (result.error) {
     return res.status(400).json(result);
   }

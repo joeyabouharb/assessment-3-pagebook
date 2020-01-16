@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const PageRepository = require('../repository/PageRepository');
 
 const createPage = (req, res) => {
@@ -25,7 +26,7 @@ const deletePage = (req, res) => {
 const getPages = (req, res) => {
   const pageRepository = PageRepository();
   const { PageQuery } = req;
-  const result = pageRepository.retrievePages(PageQuery );
+  const result = pageRepository.retrievePages(PageQuery);
   if (result.error) {
     return res.status(400).json(result);
   }

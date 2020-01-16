@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Creates a connection to a database to handle read/write access.
  * returns results as a Promise

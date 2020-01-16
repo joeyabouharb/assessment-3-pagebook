@@ -51,7 +51,7 @@ const pageRepository = (db = './pages.db') => {
     return result;
   };
 
-  const retrievePages = (pageParams, limit, offset) => {
+  const retrievePages = ({ pageParams }, limit = 100, offset = 0) => {
     const keys = Object.keys(pageParams);
     const query = keys.map((key) => `${key} LIKE $${key}`);
     const queryStr = query.length > 0 ? `WHERE ${query.join('\nAND')}` : '';
@@ -63,6 +63,7 @@ const pageRepository = (db = './pages.db') => {
     ${queryStr}
     LIMIT $limit OFFSET $offset
     `;
+
     const result = client.getAll(sql, { ...pageParams, offset, limit });
     if (result.error) {
       return { error: result.error, status: result.code };

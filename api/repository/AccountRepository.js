@@ -22,10 +22,10 @@ const AccountRepository = (db = './pages.db') => {
     `;
     const result = client.write(sql, account);
     if (result.error) {
-      const { error, code } = result;
+      const { error, status } = result;
       return error === 'SQLITE_CONSTRAINT_UNIQUE'
-        ? { error: 'user already exists', code }
-        : { error: 'an unspecified error occured.', code };
+        ? { error: 'user already exists', status }
+        : { error: 'an unspecified error occured.', status };
     }
     return result;
   };

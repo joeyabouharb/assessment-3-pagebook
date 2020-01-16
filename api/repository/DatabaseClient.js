@@ -62,13 +62,14 @@ const dbClient = (connection) => {
    * @param {string} sql
    * @param {object} params
    */
-  const getAll = (sql, params) => {
+  const getAll = (sql, { offset, limit, ...pageParams }) => {
     try {
+      console.log(limit);
       const query = client.prepare(sql);
-      const results = query.all(params);
+      const results = query.all({pageParams, limit, offset});
       return results;
     } catch (error) {
-      process.stdout.write(error);
+      console.log(error);
       return { error: 'something bad happenned during the transaction', code: 400 };
     }
   };

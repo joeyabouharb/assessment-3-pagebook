@@ -23,7 +23,7 @@ const register = (req, res) => {
   const { Account } = req;
   const result = accountRepository.register(Account);
   if (result.error) {
-    return res.status(result.code).json(result);
+    return res.status(result.status).json(result);
   }
   return res.json({ result });
 };

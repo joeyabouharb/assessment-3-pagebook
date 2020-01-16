@@ -35,7 +35,7 @@ const AccountRepository = (db = './pages.db') => {
    */
   const login = async ({ userName, password }) => {
     const sql = `
-    SELECT password, userName, email, accountId
+    SELECT password, userName, email, accountID
     FROM Accounts
     where userName == $userName
     `;

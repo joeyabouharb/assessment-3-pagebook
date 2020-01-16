@@ -22,7 +22,9 @@ const dbClient = (connection) => {
       return client
         .prepare(sql)
         .run(params);
-    } catch ({ code }) {
+    } catch (error) {
+      console.log(error);
+      const { code } = error;
       return { error: code, status: 400 };
     }
   };

@@ -15,14 +15,11 @@ CREATE TABLE Pages (
 	pageName VARCHAR(50) NOT NULL,
 	pageEmail VARCHAR(50) NOT NULL,
 	pageAddress VARCHAR(100) NOT NULL,
-	pageLocation VARCHAR(20) NOT NULL,
 	pageZip VARCHAR(4) NOT NULL,
 	pageState VARCHAR(5) NOT NULL,
 	pageCountry VARCHAR(100) NOT NULL,
 	pagePhone VARCHAR(15) NOT NULL,
 	accountID INTEGER NOT NULL UNIQUE,
-	isPublished INTEGER NOT NULL,
-	CHECK (isPublished == 0 or isPublished == 1),
 	FOREIGN KEY(accountID)
 		REFERENCES Accounts(accountID)
 );
@@ -32,6 +29,8 @@ CREATE TABLE Posts (
 	postContent BLOB NOT NULL,
 	postCreated DATETIME NOT NULL,
 	pageID INTEGER NOT NULL,
+	isPublished INTEGER NOT NULL,
+	CHECK (isPublished == 0 or isPublished == 1),
 	FOREIGN KEY(pageID)
 		REFERENCES Pages(pageID)
 );

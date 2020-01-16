@@ -4,9 +4,9 @@ const pageRepository = (db = './pages.db') => {
   const client = DatabaseClient(db);
   const createPage = (page) => {
     const sql = `
-    INSERT INTO PAGES(pageName, pageEmail, pageAddress, pageLocation,
+    INSERT INTO PAGES(accountID, pageName, pageEmail, pageAddress,
       pageZip, pageState, pageCountry, pagePhone)
-      VALUES($pageName, $pageEmail, $pageAddress, $pageLocation,
+      VALUES($accountID, $pageName, $pageEmail, $pageAddress,
         $pageZip, $pageState, $pageCountry, $pagePhone)
     `;
     const result = client.write(sql, page);

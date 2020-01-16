@@ -2,7 +2,7 @@ const constraints = {
   pageName: {
     presence: true,
     format: {
-      pattern: /^[\w\s0-9-_!:'".]$/,
+      pattern: /^[\w\s-:.'",!&()/\/]+$/,
       message: () => 'contains invalid characters, only alphanumeric letters and standard punctuation',
       length: {
         minimum: 1,
@@ -37,7 +37,7 @@ const constraints = {
   pageZip: {
     presence: true,
     format: {
-      pattern: /^d{4,10}$/,
+      pattern: /^\d{4,10}$/,
     },
     length: {
       minimum: 4,
@@ -47,21 +47,29 @@ const constraints = {
   pageState: {
     presence: true,
     format: {
-      pattern: /^[\w-]$/,
+      pattern: /^[\w-]+$/,
     },
     type: 'string',
+    length: {
+      minimum: 2,
+      maximum: 40,
+    },
   },
   pageCountry: {
     presence: true,
     format: {
-      pattern: /^[\w-]$/,
+      pattern: /^[\w-]+$/,
     },
     type: 'string',
+    length: {
+      minimum: 2,
+      maximum: 40,
+    },
   },
   pagePhone: {
     presence: true,
     format: {
-      pattern: /^[a-zA-Z0-9-\s]$/,
+      pattern: /^[a-zA-Z0-9-\s]+$/,
     },
     length: {
       minimum: 8,

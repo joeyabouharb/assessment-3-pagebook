@@ -21,9 +21,8 @@ const Page = ({
 const create = async (page, token) => {
   const result = await validate.async(page, constraints)
     .then(async (res) => {
-      const user = await verifyJwt(token);
-      console.log(user);
-      return { user, ...res };
+      const { accountID } = await verifyJwt(token);
+      return { accountID, ...res };
     })
     .catch((error) => ({ error }));
   if (result.error) {

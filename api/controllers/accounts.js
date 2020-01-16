@@ -10,7 +10,7 @@ const login = async (req, res) => {
     return res.status(result.status)
       .json(result);
   }
-  const token = await signJwt(Login)
+  const token = await signJwt(result)
     .catch((error) => {
       res.status(400);
       return { error };

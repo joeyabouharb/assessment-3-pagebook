@@ -1,5 +1,5 @@
-const pagesDBClient = require('../api/repository/DatabaseClient');
 const fs = require('fs');
+const pagesDBClient = require('../api/repository/DatabaseClient');
 
 const readFile = (filename) => new Promise((resolve, reject) => {
   fs.readFile(filename, (err, data) => {
@@ -11,11 +11,12 @@ const readFile = (filename) => new Promise((resolve, reject) => {
   });
 });
 
-const up  = async (file, schema) => {
-  const sql = await readFile(schema);
+const up = async (file, schema) => {
+  const sql = await readFile(schema)
+    .catch((err) => { throw err; });
   pagesDBClient(file).execute(sql);
   return `created database ${file}`;
-}
+};
 
 const down = async (file) => {
   const message = await new Promise((resolve, reject) => {
@@ -23,59 +24,51 @@ const down = async (file) => {
       if (err) {
         reject(err.message);
       } else {
-        resolve(`deleted ${file}`)
+        resolve(`deleted ${file}`);
       }
     });
   })
-  .catch(err => err);
+    .catch((err) => err);
   return message;
-}
+};
 
-const seed = (file, mockup) => {
+const seed = () => {
 
-}
+};
 
-const commandList = () => {
-  const commands = {
-    "info:": "\n\tthis application helps you create delete and seed databases\n",
-    "commands:": "",
-      "\t--help": "\n\t\tdisplays this helpful prompt",
-      "\t--up FILE": "\n\t\tcreate the database using the schema from the specified file location",
-      "\t--down FILE": "\n\t\tdelete the database file from the specified file location",
-      "\t--seed FILE MOCKUP": "\n\t\tseed the specified file database with specified mockup"
-
-  }
-  const msg = []
-  for (const [key, value] of Object.entries(commands)) {
-    msg.push(`${key}${value}`)
-  }
-  return msg.join("\n");
-}
+const commandList = async () => {
+  const commands = await readFile('cli/commands.json')
+    .then((text) => JSON.parse(text))
+    .catch((err) => { throw err; });
+  const msg = Object.entries(commands)
+    .reduce((result, [key, value]) => [
+      ...result, `${key}${value}`,
+    ], []);
+  return msg.join('\n');
+};
 
 const exec = () => {
-  const command = process.argv[2]
+  const command = process.argv[2];
   const file = process.argv[3];
-  if(command === '--up') {
+  if (command === '--up') {
     const schema = process.argv[4];
     return !schema
       ? commandList()
       : up(file, schema);
   }
-  if(command === '--down') {
+  if (command === '--down') {
     return down(file);
   }
-  if(command === '--seed') {
+  if (command === '--seed') {
     const mockup = process.argv[4];
-    return (
-      !mockup
+    return !mockup
       ? commandList()
-      : seed(file, mockup)
-    );
-  } 
-  return commandList;
+      : seed(file, mockup);
+  }
+  return commandList();
 };
 
 (async () => {
   const result = await exec();
-  console.log(result);
+  process.stdout.write(result);
 })();

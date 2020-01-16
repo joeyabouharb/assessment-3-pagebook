@@ -1,0 +1,8 @@
+{
+  "info:": "\n\tthis application helps you create delete and seed databases\n",
+  "commands:": "",
+  "\t--help": "\n\t\tdisplays this helpful prompt",
+  "\t--up FILE": "\n\t\tcreate the database using the schema from the specified file location",
+  "\t--down FILE": "\n\t\tdelete the database file from the specified file location",
+  "\t--seed FILE MOCKUP": "\n\t\tseed the specified file database with specified mockup"
+}

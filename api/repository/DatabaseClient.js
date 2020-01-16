@@ -28,7 +28,7 @@ const dbClient = (connection) => {
   };
   /**
    * execute multiple sql queries ( usually read from a file)
-   * needed for creating new entities in the database
+   * needed for creating/ seeding new entities in the database
    *
    * ***use in CLI only!!***
    *

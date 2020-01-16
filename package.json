@@ -1,0 +1,28 @@
+{
+  "name": "assessment_3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "better-sqlite3": "^5.4.3",
+    "express-jwt": "^5.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeyabouharb/assessment-3-pagebook.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joeyabouharb/assessment-3-pagebook/issues"
+  },
+  "homepage": "https://github.com/joeyabouharb/assessment-3-pagebook#readme"
+}

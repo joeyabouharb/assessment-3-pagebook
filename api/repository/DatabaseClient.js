@@ -12,6 +12,8 @@ const SqliteDB = require('better-sqlite3');
  */
 const dbClient = (connection) => {
   const client = new SqliteDB(connection);
+  // load up regular expression server into sqlite
+  // client.loadExtension('/usr/lib/sqlite3/pcre.so');
   /**
    * insert new entry into database
    * @param {string} sql
@@ -42,7 +44,7 @@ const dbClient = (connection) => {
       client.exec(sql);
       return { result: 'success' };
     } catch (err) {
-      return err.code;
+      return err;
     }
   };
   /**
@@ -67,9 +69,9 @@ const dbClient = (connection) => {
    */
   const getAll = (sql, { offset, limit, ...pageParams }) => {
     try {
-      console.log(limit);
       const query = client.prepare(sql);
-      const results = query.all({ pageParams, limit, offset });
+      const results = query.all({ ...pageParams, limit, offset });
+      console.log(results);
       return results;
     } catch (error) {
       console.log(error);

@@ -8,5 +8,7 @@ const accountRouter = Router();
 
 accountRouter.get('/', Validator(Login), accountController.login);
 accountRouter.post('/', Validator(Account), accountController.register);
+accountRouter.delete('/', Validator(Login), accountController.delete);
+accountRouter.patch('/', Validator(Account), accountController.update);
 
 module.exports = Object.freeze(accountRouter);

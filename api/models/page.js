@@ -1,7 +1,6 @@
 
 const validate = require('validate.js');
 const constraints = require('../../shared/validations/page');
-const { verifyJwt } = require('../utils/auth');
 
 const Page = ({
   accountID, pageName, pageEmail, pageAddress,
@@ -21,7 +20,7 @@ const Page = ({
 const create = async (page, token) => {
   const result = await validate.async(page, constraints)
     .then(async (res) => {
-      const { accountID } = await verifyJwt(token);
+      const { accountID } = token;
       return { accountID, ...res };
     })
     .catch((error) => ({ error }));

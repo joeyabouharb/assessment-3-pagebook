@@ -12,7 +12,7 @@ const constraints = {
   },
   pageEmail: {
     email: {
-      message: () => "is not valid"
+      message: () => 'is not valid',
     },
     length: {
       minimum: 4,
@@ -24,7 +24,7 @@ const constraints = {
   pageAddress: {
     presence: true,
     format: {
-      pattern: /^[\d\s\w+!-]+$/
+      pattern: /^[\d\s\w+!-]+$/,
     },
     length: {
       minimum: 4,
@@ -43,23 +43,25 @@ const constraints = {
   },
   pageState: {
     format: {
-      pattern: /^[\w-]$/
+      pattern: /^[\w-]$/,
     },
     type: 'string',
   },
   pageCountry: {
     format: {
-      pattern: /^[\w-]$/
+      pattern: /^[\w-]$/,
     },
     type: 'string',
   },
   pagePhone: {
     format: {
-      pattern: /^[0-9+/s]$/
+      pattern: /^[0-9+/s]$/,
     },
     length: {
       minimum: 8,
       maximum: 15,
     },
   },
-}
+};
+
+module.exports = Object.freeze(constraints);

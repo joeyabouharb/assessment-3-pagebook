@@ -14,8 +14,8 @@ const readFile = (filename) => new Promise((resolve, reject) => {
 const up = async (file, schema) => {
   const sql = await readFile(schema)
     .catch((err) => { throw err; });
-  pagesDBClient(file).execute(sql);
-  return `created database ${file}`;
+  const result = pagesDBClient(file).execute(sql);
+  return result;
 };
 
 const down = async (file) => {

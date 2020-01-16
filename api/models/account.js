@@ -14,6 +14,7 @@ const Account = ({
   token: uuid(),
   accountId: uuid(),
 });
+
 const create = async ({
   userName, password, email, confirmPassword,
 }) => {

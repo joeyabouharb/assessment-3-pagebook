@@ -2,13 +2,12 @@ const validate = require('validate.js');
 const constraints = require('../../shared/validations/pageQuery');
 
 const PageQuery = ({
-  pageName, pageEmail, pageAddress, pageLocation,
+  pageName, pageEmail, pageAddress,
   pageZip, pageState, pageCountry, pagePhone,
 }) => ({
   pageName,
   pageEmail,
   pageAddress,
-  pageLocation,
   pageZip,
   pageState,
   pageCountry,
@@ -27,7 +26,7 @@ const create = async (page) => {
   const pageParams = Object.entries(params)
     .filter(([, value]) => value !== undefined)
     .reduce((obj, [key, value]) => ({
-      ...obj, [key]: value,
+      ...obj, [key]: `%${value}%`,
     }), {});
   return { pageParams };
 };

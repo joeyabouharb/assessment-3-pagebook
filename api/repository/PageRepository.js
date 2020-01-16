@@ -54,16 +54,13 @@ const pageRepository = (db = './pages.db') => {
   const retrievePages = ({ pageParams }, limit = 100, offset = 0) => {
     const keys = Object.keys(pageParams);
     const query = keys.map((key) => `${key} LIKE $${key}`);
-    const queryStr = query.length > 0 ? `WHERE ${query.join('\nAND')}` : '';
+    const queryStr = query.length > 0 ? `WHERE ${query.join('\nOR ')}` : '';
     const sql = `
     SELECT *
     FROM Pages p
-    INNER JOIN Followers f
-      ON f.AccountID == p.AccountID
     ${queryStr}
     LIMIT $limit OFFSET $offset
     `;
-
     const result = client.getAll(sql, { ...pageParams, offset, limit });
     if (result.error) {
       return { error: result.error, status: result.code };

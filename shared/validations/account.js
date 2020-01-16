@@ -15,7 +15,7 @@ const constraints = {
     presence: true,
     format: {
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_?])[A-Za-z\d@$!%*?&\-_?]{8,}$/,
-      message: () => 'must contain 1 lower case, 1 uppercase, 1 numeric character' 
+      message: () => 'must contain 1 lower case, 1 uppercase, 1 numeric character',
     },
     length: {
       minimum: 8,
@@ -25,19 +25,19 @@ const constraints = {
   },
   confirmPassword: {
     presence: true,
-    equality: "password"
+    equality: 'password',
   },
   email: {
     presence: true,
     email: {
-      message: () => "is not valid!"
+      message: () => 'is not valid!',
     },
     length: {
       minimum: 4,
       maximum: 255,
     },
     type: 'string',
-  }
+  },
 };
 
 module.exports = Object.freeze(constraints);

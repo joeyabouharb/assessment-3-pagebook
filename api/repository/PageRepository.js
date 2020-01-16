@@ -15,6 +15,7 @@ const pageRepository = (db = './pages.db') => {
     }
     return result;
   };
+
   const deletePage = ({ pageID }) => {
     const sql = `
     DELETE FROM Page
@@ -38,7 +39,10 @@ const pageRepository = (db = './pages.db') => {
 
   const retrievePageInfo = (query) => {
     const sql = `
-    
+    SELECT p.pageName, p.pageAddress, p.pageCountry, Count(f.accountId)
+    from Pages p
+    INNER JOIN followers ON
+      f.pageId == p.pageId
     `;
     const result = client.getOne(sql, { ...query });
     if (result.error) {

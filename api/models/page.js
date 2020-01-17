@@ -1,6 +1,6 @@
-
-const validate = require('validate.js');
+const guid = require('uuid/v4');
 const constraints = require('../../shared/validations/page');
+const { validateBody } = require('../utils/validators');
 
 const Page = ({
   accountID, pageName, pageEmail, pageAddress,
@@ -14,20 +14,15 @@ const Page = ({
   pageState,
   pageCountry,
   pagePhone,
+  pageID: guid(),
 });
 
-
-const create = async (page, token) => {
-  const result = await validate.async(page, constraints)
-    .then(async (res) => {
-      const { accountID } = token;
-      return { accountID, ...res };
-    })
-    .catch((error) => ({ error }));
+const create = async (page, { accountID }) => {
+  const result = await validateBody(page, constraints);
   if (result.error) {
-    return { error: result.error, status: 400 };
+    return Promise.reject(result);
   }
-  return Page(result);
+  return Page({ ...result, accountID });
 };
 
 module.exports = Object.freeze({

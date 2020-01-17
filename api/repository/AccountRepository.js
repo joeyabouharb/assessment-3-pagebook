@@ -40,7 +40,7 @@ const AccountRepository = (db = './pages.db') => {
     where userName == $userName
     `;
     const user = client.getOne(sql, { userName });
-    if (!user) {
+    if (!user || user.error) {
       return { error: 'Credentials were not valid!', status: 401 };
     }
     const { password: hash, ...rest } = user;
@@ -50,10 +50,49 @@ const AccountRepository = (db = './pages.db') => {
     }
     return rest;
   };
+  const checkIfUserExists = (accountID) => {
+    const sql = `
+    SELECT userName, email
+    FROM Accounts
+    WHERE accountID == $accountID
+    `;
+    const account = client.getOne(sql, { accountID });
+    if (!account || account.error) {
+      return { error: 'credentials were not valid!', status: 400 };
+    }
+    return account;
+  };
+
+  const deleteAccount = (accountID) => {
+    const sql = `
+    DELETE
+    FROM Accounts
+    WHERE accountID == $accountID
+    `;
+    const result = client.write(sql, { accountID });
+    if (result.error || !result) {
+      return { error: result.error, status: 400 };
+    }
+    return result;
+  };
+
+  const updateAccountDetails = (details) => {
+    const sql = `
+    UPDATE TABLE 
+    `;
+    const result = client.write(sql, details);
+    if (!result || result.error) {
+      return { error: 'could not update db at this time', status: 400 };
+    }
+    return result;
+  };
   return {
     register,
     login,
-    close: () => client.close(),
+    checkIfUserExists,
+    deleteAccount,
+    updateAccountDetails,
+    close: () => { client.close(); },
   };
 };
 

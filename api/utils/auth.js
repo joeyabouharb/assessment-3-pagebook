@@ -1,4 +1,5 @@
 const jsonwebtoken = require('jsonwebtoken');
+const AccountRepository = require('../repository/AccountRepository');
 
 const secret = 'Hello, Secret-World!';
 
@@ -12,27 +13,41 @@ const verifyJwt = (token) => new Promise((resolve, reject) => {
   });
 });
 
-const authNeeded = (req, res, next) => {
-  const auth = req.headers.authorization;
+const pullTokenFromHeader = (headers) => {
+  const auth = headers.authorization;
   if (!auth) {
-    res.status(401).json({ error: 'Not Authorized' });
-  } else {
-    const [bearer, token] = auth.split(' ');
-    if (bearer !== 'Bearer') {
-      res.status(401).json({ error: 'Not Authorized' });
-    } else {
-      verifyJwt(token)
-        .then((decoded) => {
-          req.user = decoded;
-          next();
-        })
-        .catch(() => {
-          res.status(401).json({
-            error: 'authentication failure',
-          });
-        });
-    }
+    return { error: 'Not Authorized', status: 401 };
   }
+  const [bearer, token] = auth.split(' ');
+  if (bearer !== 'Bearer' || !token) {
+    return { error: 'Not Authorized', status: 401 };
+  }
+  return token;
+};
+
+const authNeeded = (req, res, next) => {
+  const token = pullTokenFromHeader(req.headers);
+  if (token.error) {
+    return res.status(token.status).json(token);
+  }
+  return verifyJwt(token)
+    .then((decoded) => {
+      const accountRepository = AccountRepository();
+      const { accountID } = decoded;
+      const account = accountRepository
+        .checkIfUserExists(accountID);
+      accountRepository.close();
+      if (account.error) {
+        return Promise.reject(account);
+      }
+      req.user = decoded;
+      return next();
+    })
+    .catch(() => {
+      res.status(401).json({
+        error: 'authentication failure',
+      });
+    });
 };
 
 const signJwt = (credentials) => new Promise((resolve, reject) => {

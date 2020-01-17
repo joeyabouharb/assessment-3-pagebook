@@ -1,15 +1,15 @@
 const { Router } = require('express');
 const PageController = require('../controllers/pages');
-const Validate = require('../utils/validators');
+const { requiresValidation } = require('../utils/validators');
 const PageQuery = require('../models/pageQuery');
 const Page = require('../models/page');
 
 const pageRouter = Router();
 
-pageRouter.get('/', Validate(PageQuery), PageController.getPages);
-pageRouter.get('/:pageID/', PageController.getPageDetails);
-pageRouter.post('/', Validate(Page), PageController.createPage);
-pageRouter.patch('/', Validate(Page), PageController.updatePage);
-pageRouter.delete('/:pageID/', PageController.deletePage);
+pageRouter.get('/', requiresValidation(PageQuery), PageController.getPages);
+pageRouter.get('/:id/', PageController.getPageDetails);
+pageRouter.post('/', requiresValidation(Page), PageController.createPage);
+pageRouter.patch('/', requiresValidation(Page), PageController.updatePage);
+pageRouter.delete('/:id/', PageController.deletePage);
 
 module.exports = Object.freeze(pageRouter);

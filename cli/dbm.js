@@ -70,5 +70,5 @@ const exec = () => {
 
 (async () => {
   const result = await exec();
-  process.stdout.write(result);
+  console.log(result);
 })();

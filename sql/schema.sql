@@ -11,7 +11,7 @@ CREATE TABLE Accounts (
 );
 
 CREATE TABLE Pages (
-	pageID INTEGER PRIMARY KEY,
+	pageID TEXT PRIMARY KEY,
 	pageName VARCHAR(50) NOT NULL,
 	pageEmail VARCHAR(50) NOT NULL,
 	pageAddress VARCHAR(100) NOT NULL,
@@ -19,16 +19,16 @@ CREATE TABLE Pages (
 	pageState VARCHAR(5) NOT NULL,
 	pageCountry VARCHAR(100) NOT NULL,
 	pagePhone VARCHAR(15) NOT NULL,
-	accountID INTEGER NOT NULL UNIQUE,
+	accountID TEXT NOT NULL UNIQUE,
 	FOREIGN KEY(accountID)
 		REFERENCES Accounts(accountID)
 );
 
 CREATE TABLE Posts (
-	postID INTEGER PRIMARY KEY,
+	postID TEXT PRIMARY KEY,
 	postContent BLOB NOT NULL,
 	postCreated DATETIME NOT NULL,
-	pageID INTEGER NOT NULL,
+	pageID TEXT NOT NULL,
 	isPublished INTEGER NOT NULL,
 	CHECK (isPublished == 0 or isPublished == 1),
 	FOREIGN KEY(pageID)
@@ -36,7 +36,7 @@ CREATE TABLE Posts (
 );
 
 CREATE TABLE PostAnalysis (
-	postID INTEGER NOT NULL UNIQUE,
+	postID TEXT NOT NULL UNIQUE,
 	results TEXT NOT NULL,
 	confidence INTEGER NOT NULL,
 	FOREIGN KEY(postID)
@@ -52,8 +52,8 @@ CREATE TABLE PostAnalysis (
 );
 
 CREATE TABLE postLikes (
-	postID INTEGER NOT NULL,
-	accountID INTEGER NOT NULL,
+	postID TEXT NOT NULL,
+	accountID TEXT NOT NULL,
 	FOREIGN KEY(postID)
 		REFERENCES Posts(postID),
 	FOREIGN KEY(accountID)
@@ -61,18 +61,18 @@ CREATE TABLE postLikes (
 );
 
 CREATE TABLE Comments (
-	commentID INTEGER PRIMARY KEY,
+	commentID TEXT PRIMARY KEY,
 	commentContent BLOB NOT NULL,
 	commentCreated DATETIME NOT NULL,
 	commentUpdated DATETIME NOT NULL,
-	postID INTEGER NOT NULL,
+	postID TEXT NOT NULL,
 	FOREIGN KEY(postID)
 		REFERENCES Posts(postID)
 );
 
 CREATE TABLE commentLikes(
-	commentID INTEGER NOT NULL,
-	accountID INTEGER NOT NULL,
+	commentID TEXT NOT NULL,
+	accountID TEXT NOT NULL,
 	FOREIGN KEY(commentID)
 		REFERENCES Comments(commentID),
 	FOREIGN KEY(accountID)
@@ -80,8 +80,8 @@ CREATE TABLE commentLikes(
 );
 
 CREATE TABLE Followers(
-	AccountID INTEGER NOT NULL,
-	pageID INTEGER NOT NULL,
+	AccountID TEXT NOT NULL,
+	pageID TEXT NOT NULL,
 	FOREIGN KEY(AccountID)
 		REFERENCES Accounts(AccountID),
 	FOREIGN KEY(pageID)

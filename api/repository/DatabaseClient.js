@@ -56,7 +56,7 @@ const dbClient = (connection) => {
     const query = client.prepare(sql);
     try {
       const results = query.get(params);
-      return results;
+      return results || { error: 'not found', status: 404 };
     } catch (err) {
       return { error: 'unspecified error occured during transaction', status: 500 };
     }
@@ -71,8 +71,7 @@ const dbClient = (connection) => {
     try {
       const query = client.prepare(sql);
       const results = query.all({ ...pageParams, limit, offset });
-      console.log(results);
-      return results;
+      return results.length > 0 ? results : { error: 'not found', status: 404 };
     } catch (error) {
       console.log(error);
       return { error: 'something bad happenned during the transaction', code: 400 };
@@ -95,7 +94,7 @@ const dbClient = (connection) => {
     try {
       client.aggregate(name, options);
       const results = client.prepare(sql);
-      return results;
+      return results > 0 ? results : { error: 'not found', status: 404 };
     } catch (error) {
       return { error: 'an error occured during the transaction', status: 400 };
     }

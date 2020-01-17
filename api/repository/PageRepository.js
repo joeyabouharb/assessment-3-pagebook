@@ -2,6 +2,7 @@ const DatabaseClient = require('./DatabaseClient');
 
 const pageRepository = (db = './pages.db') => {
   const client = DatabaseClient(db);
+
   const createPage = (page) => {
     const sql = `
     INSERT INTO PAGES(accountID, pageName, pageEmail, pageAddress,
@@ -37,21 +38,20 @@ const pageRepository = (db = './pages.db') => {
     return result;
   };
 
-  const retrievePageInfo = (query) => {
+  const retrievePageInfo = (pageID) => {
     const sql = `
-    SELECT p.pageName, p.pageAddress, p.pageCountry, Count(f.accountId)
+    SELECT p.pageName, p.pageAddress, p.pageCountry
     from Pages p
-    INNER JOIN followers ON
-      f.pageId == p.pageId
+    WHERE p.pageID == $pageID
     `;
-    const result = client.getOne(sql, { ...query });
+    const result = client.getOne(sql, pageID);
     if (result.error) {
       return { error: result.error, status: 400 };
     }
     return result;
   };
 
-  const retrievePages = ({ pageParams }, limit = 100, offset = 0) => {
+  const retrievePages = (pageParams, limit = 100, offset = 0) => {
     const keys = Object.keys(pageParams);
     const query = keys.map((key) => `${key} LIKE $${key}`);
     const queryStr = query.length > 0 ? `WHERE ${query.join('\nOR ')}` : '';
@@ -73,6 +73,7 @@ const pageRepository = (db = './pages.db') => {
     deletePage,
     updatePageDetails,
     retrievePageInfo,
+    close: () => { client.close(); },
   };
 };
 

@@ -1,5 +1,5 @@
-const validate = require('validate.js');
 const constraints = require('../../shared/validations/login');
+const { validateBody } = require('../utils/validators');
 
 const Login = ({ userName, password }) => ({
   userName,
@@ -7,12 +7,11 @@ const Login = ({ userName, password }) => ({
 });
 
 const create = async (credentials) => {
-  const login = await validate.async(credentials, constraints)
-    .catch((error) => ({ error }));
+  const login = await validateBody(credentials, constraints);
   if (login.error) {
-    return { error: login.error, status: 400 };
+    Promise.reject(login);
   }
-  return Login(credentials);
+  return Login(login);
 };
 
 module.exports = Object.freeze({

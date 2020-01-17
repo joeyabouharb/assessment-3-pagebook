@@ -1,5 +1,5 @@
-const validate = require('validate.js');
 const constraints = require('../../shared/validations/pageQuery');
+const { validateBody, validateQuery } = require('../utils/validators');
 
 const PageQuery = ({
   pageName, pageEmail, pageAddress,
@@ -16,19 +16,14 @@ const PageQuery = ({
 
 const create = async (page) => {
   // console.log(page);
-  const result = await validate.async(page, constraints)
-    .catch((error) => ({ error }));
+  const result = await validateBody(page, constraints);
   if (result.error) {
-    return { error: result.error, status: 400 };
+    return Promise.reject(result);
   }
   const params = PageQuery(page);
   // filter out and create a new object with filled entries.
-  const pageParams = Object.entries(params)
-    .filter(([, value]) => value !== undefined)
-    .reduce((obj, [key, value]) => ({
-      ...obj, [key]: `%${value}%`,
-    }), {});
-  return { pageParams };
+  const pageParams = validateQuery(params);
+  return pageParams;
 };
 
 module.exports = Object.freeze({

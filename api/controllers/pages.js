@@ -35,8 +35,14 @@ const getPages = (req, res) => {
 
 const getPageDetails = (req, res) => {
   const pageRepository = PageRepository();
-  const { pageID } = req.args;
+  const { id } = req.params;
+  const pageID = Number(id);
+  if (!pageID || Object.is(pageID, NaN)) {
+    return res.status(400).json({ error: 'no value supplied' });
+  }
+  console.log(pageID);
   const result = pageRepository.retrievePageInfo({ pageID });
+  pageRepository.close();
   if (result.error) {
     return res.send(result.status).json(result);
   }
@@ -47,6 +53,7 @@ const updatePage = (req, res) => {
   const pageRepository = PageRepository();
   const { pageID, ...details } = req.Page;
   const result = pageRepository.updatePageDetails(details, pageID);
+  pageRepository.close();
   if (result.error) {
     return res.status(result.status).json(result);
   }

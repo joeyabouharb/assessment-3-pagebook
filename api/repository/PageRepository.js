@@ -1,39 +1,54 @@
 const DatabaseClient = require('./DatabaseClient');
 
-const pageRepository = (db = './pages.db') => {
-  const client = DatabaseClient(db);
+const pageRepository = () => {
+  const client = DatabaseClient();
 
   const createPage = (page) => {
     const sql = `
-    INSERT INTO PAGES(accountID, pageName, pageEmail, pageAddress,
+    INSERT INTO PAGES(pageID, accountID, pageName, pageEmail, pageAddress,
       pageZip, pageState, pageCountry, pagePhone)
-      VALUES($accountID, $pageName, $pageEmail, $pageAddress,
+      VALUES($pageID, $accountID, $pageName, $pageEmail, $pageAddress,
         $pageZip, $pageState, $pageCountry, $pagePhone)
     `;
-    const result = client.write(sql, page);
+    const result = client.modify(sql, page);
     if (result.error) {
-      return { error: result, status: 400 };
+      if (result.error === 'SQLITE_CONSTRAINT_UNIQUE' && result.column === 'accountID') {
+        return { error: 'Looks like you already created your page...', status: result.status };
+      }
+      return { error: 'unspecified error occured', status: result.status };
     }
     return result;
   };
 
-  const deletePage = ({ pageID }) => {
+  const deletePage = (pageID) => {
     const sql = `
-    DELETE FROM Page
+    DELETE FROM Pages
     WHERE pageID == $pageID
     `;
-    const result = client.write(sql, { pageID });
+    const result = client.modify(sql, pageID);
     if (result.error) {
-      return { error: result.error, status: 400 };
+      return { error: result.error, status: result.status };
+    } if (result.changes === 0) {
+      return { error: 'page did not exist', status: 404 };
     }
     return result;
   };
-  const updatePageDetails = ({ ...details }, id) => {
+  const updatePageDetails = (page) => {
     const sql = `
+    UPDATE Pages
+    SET
+    pageName = $pageName,
+    pageEmail = $pageEmail,
+    pageAddress = $pageAddress,
+    pageZip = $pageZip,
+    pageState = $pageState,
+    pageCountry = $pageCountry,
+    pagePhone = $pagePhone
+    WHERE pageID = $pageID
     `;
-    const result = client.write(sql, { ...details, id });
+    const result = client.modify(sql, page);
     if (result.error) {
-      return { error: result.error, status: 400 };
+      return { error: result.error, status: result.status };
     }
     return result;
   };
@@ -46,7 +61,7 @@ const pageRepository = (db = './pages.db') => {
     `;
     const result = client.getOne(sql, pageID);
     if (result.error) {
-      return { error: result.error, status: 400 };
+      return { error: result.error, status: result.status };
     }
     return result;
   };
@@ -63,7 +78,7 @@ const pageRepository = (db = './pages.db') => {
     `;
     const result = client.getAll(sql, { ...pageParams, offset, limit });
     if (result.error) {
-      return { error: result.error, status: result.code };
+      return { error: result.error, status: result.status };
     }
     return result;
   };

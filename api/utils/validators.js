@@ -12,7 +12,7 @@ const requiresValidation = (Entity) => (req, res, next) => {
       next();
     })
     .catch((err) => {
-      res.status(err.status).json(err);
+      res.status(400).json(err);
     });
 };
 /**
@@ -22,18 +22,18 @@ const requiresValidation = (Entity) => (req, res, next) => {
  */
 const validateBody = async (body, constraints) => {
   const result = await validate.async({ ...body }, constraints)
+    .then((data) => validate.cleanAttributes(data, constraints))
     .catch((error) => ({ error, status: 400 }));
   return result;
 };
 
 /**
- * strip any undefined parameters in parameter object
+ * insert wildcards for each paramater for query support
  *
  * @param {any} params
  * @returns { object } object
  */
-const validateQuery = (params) => Object.entries(params)
-  .filter(([, value]) => value !== undefined)
+const validateQuery = (query) => Object.entries(query)
   .reduce((obj, [key, value]) => ({
     ...obj, [key]: `%${value}%`,
   }), {});

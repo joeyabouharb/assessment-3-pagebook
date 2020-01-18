@@ -1,17 +1,20 @@
 /* eslint-disable no-console */
 /**
  * Creates a connection to a database to handle read/write access.
- * returns results as a Promise
+ *
  */
 const SqliteDB = require('better-sqlite3');
+
 /**
  * factory function:
  *
  * produces a connection to an SQL database with basic CRUD operations
  * @param {string} connection
  */
-const dbClient = (connection) => {
+const dbClient = (connection = './pages.db', key = 'MYSECRETPASSKEY') => {
   const client = new SqliteDB(connection);
+  client.pragma(`KEY = ${key}`);
+
   // load up regular expression server into sqlite
   // client.loadExtension('/usr/lib/sqlite3/pcre.so');
   /**
@@ -20,17 +23,20 @@ const dbClient = (connection) => {
    * @param {any} params
    */
 
-  const write = (sql, params) => {
+  const modify = (sql, params) => {
     try {
       return client
         .prepare(sql)
         .run(params);
     } catch (error) {
       console.log(error);
-      const { code } = error;
-      return { error: code, status: 400 };
+      const { code, message } = error;
+      // const [, errorOn] = message.split(': ');
+      // const [, column] = errorOn.split('.');
+      return { error: code, column: message, status: 400 };
     }
   };
+
   /**
    * execute multiple sql queries ( usually read from a file)
    * needed for creating/ seeding new entities in the database
@@ -47,6 +53,7 @@ const dbClient = (connection) => {
       return err;
     }
   };
+
   /**
    * get the first result returned from an sql query
    * @param {string} sql
@@ -61,6 +68,7 @@ const dbClient = (connection) => {
       return { error: 'unspecified error occured during transaction', status: 500 };
     }
   };
+
   /**
    *
    * get all the results from an sql query
@@ -71,12 +79,13 @@ const dbClient = (connection) => {
     try {
       const query = client.prepare(sql);
       const results = query.all({ ...pageParams, limit, offset });
-      return results.length > 0 ? results : { error: 'not found', status: 404 };
+      return results.length > 0 ? results : { error: (entity) => `${entity}s not found`, status: 404 };
     } catch (error) {
       console.log(error);
       return { error: 'something bad happenned during the transaction', code: 400 };
     }
   };
+
   /**
    * close database connection once all queries have been executed
    */
@@ -103,7 +112,7 @@ const dbClient = (connection) => {
   return {
     getOne,
     getAll,
-    write,
+    modify,
     execute,
     close,
     aggregate,

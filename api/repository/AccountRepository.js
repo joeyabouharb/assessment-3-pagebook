@@ -8,19 +8,20 @@ const pagesDBClient = require('./DatabaseClient');
  *
  * @param {string} db
  */
-const AccountRepository = (db = './pages.db') => {
-  const client = pagesDBClient(db);
+const AccountRepository = () => {
+  const client = pagesDBClient();
 
   /**
    * create a new account
    * @param {Account} account
    */
   const register = (account) => {
+    console.log(account);
     const sql = `
-    INSERT INTO Accounts(userName, password, email, isVerified, isTwoFactor, token, accountId)
-      VALUES($userName, $password, $email, $isVerified, $isTwoFactor, $token, $accountId)
+    INSERT INTO Accounts(accountID, userName, password, email, isVerified, isTwoFactor, token)
+      VALUES($accountID, $userName, $password, $email, $isVerified, $isTwoFactor, $token)
     `;
-    const result = client.write(sql, account);
+    const result = client.modify(sql, account);
     if (result.error) {
       const { error, status } = result;
       return error === 'SQLITE_CONSTRAINT_UNIQUE'
@@ -40,8 +41,8 @@ const AccountRepository = (db = './pages.db') => {
     where userName == $userName
     `;
     const user = client.getOne(sql, { userName });
-    if (!user || user.error) {
-      return { error: 'Credentials were not valid!', status: 401 };
+    if (user.error) {
+      return { error: 'credentials were not valid!', status: 401 };
     }
     const { password: hash, ...rest } = user;
     const success = await argon2.verify(hash, password);
@@ -57,8 +58,8 @@ const AccountRepository = (db = './pages.db') => {
     WHERE accountID == $accountID
     `;
     const account = client.getOne(sql, { accountID });
-    if (!account || account.error) {
-      return { error: 'credentials were not valid!', status: 400 };
+    if (account.error) {
+      return { error: account.status, status: 401 };
     }
     return account;
   };
@@ -69,29 +70,47 @@ const AccountRepository = (db = './pages.db') => {
     FROM Accounts
     WHERE accountID == $accountID
     `;
-    const result = client.write(sql, { accountID });
-    if (result.error || !result) {
-      return { error: result.error, status: 400 };
+    const result = client.modify(sql, { accountID });
+    if (result.error) {
+      return { error: result, status: result.status };
     }
     return result;
   };
 
   const updateAccountDetails = (details) => {
     const sql = `
-    UPDATE TABLE 
+    UPDATE Accounts
+    SET email == $email,
+    userName == $userName
+    WHERE accountID == $accountID
     `;
-    const result = client.write(sql, details);
-    if (!result || result.error) {
-      return { error: 'could not update db at this time', status: 400 };
+    const result = client.modify(sql, details);
+    if (result.error) {
+      return { error: result.error, status: result.status };
     }
     return result;
   };
+
+  const updateAccountPassword = (details) => {
+    const sql = `
+    UPDATE Accounts
+    SET password == $password
+    WHERE accountID == $accountID
+    `;
+    const result = client.modify(sql, details);
+    if (result.error) {
+      return { error: result.error, status: 400 };
+    }
+    return result;
+  };
+
   return {
     register,
     login,
     checkIfUserExists,
     deleteAccount,
     updateAccountDetails,
+    updateAccountPassword,
     close: () => { client.close(); },
   };
 };

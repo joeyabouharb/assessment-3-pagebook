@@ -9,7 +9,7 @@ const pageRouter = Router();
 pageRouter.get('/', requiresValidation(PageQuery), PageController.getPages);
 pageRouter.get('/:id/', PageController.getPageDetails);
 pageRouter.post('/', requiresValidation(Page), PageController.createPage);
-pageRouter.patch('/', requiresValidation(Page), PageController.updatePage);
+pageRouter.patch('/:id', requiresValidation(Page), PageController.updatePage);
 pageRouter.delete('/:id/', PageController.deletePage);
 
 module.exports = Object.freeze(pageRouter);

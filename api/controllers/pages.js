@@ -6,6 +6,7 @@ const createPage = (req, res) => {
   const { Page } = req;
   console.log(Page);
   const result = pageRepository.createPage(Page);
+  pageRepository.close();
   if (result.error) {
     const { status } = result;
     return res.status(status).json(result);
@@ -15,8 +16,9 @@ const createPage = (req, res) => {
 
 const deletePage = (req, res) => {
   const pageRepository = PageRepository();
-  const { pageID } = req;
+  const { id: pageID } = req.params;
   const result = pageRepository.deletePage({ pageID });
+  pageRepository.close();
   if (result.error) {
     return res.status(result.status).json(result);
   }
@@ -26,7 +28,9 @@ const deletePage = (req, res) => {
 const getPages = (req, res) => {
   const pageRepository = PageRepository();
   const { PageQuery } = req;
+  console.log(PageQuery);
   const result = pageRepository.retrievePages(PageQuery);
+  pageRepository.close();
   if (result.error) {
     return res.status(400).json(result);
   }
@@ -35,30 +39,27 @@ const getPages = (req, res) => {
 
 const getPageDetails = (req, res) => {
   const pageRepository = PageRepository();
-  const { id } = req.params;
-  const pageID = Number(id);
-  if (!pageID || Object.is(pageID, NaN)) {
-    return res.status(400).json({ error: 'no value supplied' });
-  }
-  console.log(pageID);
+  const { id: pageID } = req.params;
   const result = pageRepository.retrievePageInfo({ pageID });
-  pageRepository.close();
-  if (result.error) {
-    return res.send(result.status).json(result);
-  }
-  return res.json({ result });
-};
-
-const updatePage = (req, res) => {
-  const pageRepository = PageRepository();
-  const { pageID, ...details } = req.Page;
-  const result = pageRepository.updatePageDetails(details, pageID);
   pageRepository.close();
   if (result.error) {
     return res.status(result.status).json(result);
   }
   return res.json({ result });
 };
+
+const updatePage = (req, res) => {
+  const pageRepository = PageRepository();
+  const { Page } = req;
+  Page.pageID = req.params.id;
+  const result = pageRepository.updatePageDetails(Page);
+  pageRepository.close();
+  if (result.error) {
+    return res.status(result.status).json(result);
+  }
+  return res.json({ result });
+};
+
 
 module.exports = Object.freeze({
   updatePage,

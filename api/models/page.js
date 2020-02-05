@@ -3,7 +3,7 @@ const { validateBody } = require('../utils/validators');
 
 const Page = () => ({
   pageName: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^[\w\s-:.'",!&()/\\]+$/,
       message: () => 'contains invalid characters, only alphanumeric letters and standard punctuation',
@@ -15,7 +15,7 @@ const Page = () => ({
     },
   },
   pageEmail: {
-    presence: true,
+    presence: { allowEmpty: false },
     email: {
       message: () => 'is not valid',
     },
@@ -27,28 +27,24 @@ const Page = () => ({
 
   },
   pageAddress: {
-    presence: true,
-    format: {
-      pattern: /^\d{1,5}(\s|\/\d )(\w+\s\w+).+$/,
-    },
+    presence: { allowEmpty: false },
     length: {
       minimum: 4,
-      maximum: 50,
+      maximum: 100,
     },
     type: 'string',
   },
   pageZip: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
-      pattern: /^\d{4,10}$/,
+      pattern: /^[\d-]*$/,
     },
     length: {
-      minimum: 4,
       maximum: 10,
     },
   },
   pageState: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^[\w-]+$/,
     },
@@ -59,34 +55,30 @@ const Page = () => ({
     },
   },
   pageCountry: {
-    presence: true,
-    format: {
-      pattern: /^[\w-]+$/,
-    },
+    presence: { allowEmpty: false },
     type: 'string',
     length: {
       minimum: 2,
-      maximum: 40,
+      maximum: 80,
     },
   },
   pagePhone: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
-      pattern: /^[a-zA-Z0-9-\s]+$/,
+      pattern: /^[-+0-9\s]*$/,
     },
     length: {
       minimum: 8,
-      maximum: 15,
+      maximum: 20,
     },
   },
 });
 
-const create = async (page, { accountID }) => {
+const create = async (page, { accountID, pageID = guid() }) => {
   const newPage = await validateBody(page, Page());
   if (newPage.error) {
     return Promise.reject(newPage);
   }
-  const pageID = guid();
   return { ...newPage, accountID, pageID };
 };
 module.exports = Object.freeze({

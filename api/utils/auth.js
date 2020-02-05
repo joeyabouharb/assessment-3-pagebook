@@ -60,8 +60,24 @@ const signJwt = (credentials) => new Promise((resolve, reject) => {
   });
 });
 
+const authorizeAccessToPage = (req, res, next) => {
+  const { model, user } = req;
+  // try and grab our IDs from our req body, otherwise extract info from url
+  const { pageID = req.baseUrl.split('/')[5], accountID } = model || user;
+  const accountRepository = AccountRepository();
+  const result = accountRepository
+    .authorizePageAccess(pageID, accountID);
+  accountRepository.close();
+  if (result.error) {
+    res.json({ error: 'unauthorized', status: 403 }).status(403);
+  }
+  req.pageID = pageID;
+  next();
+};
+
 module.exports = Object.freeze({
   authNeeded,
   signJwt,
   verifyJwt,
+  authorizeAccessToPage,
 });

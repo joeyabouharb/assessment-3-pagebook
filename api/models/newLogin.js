@@ -3,7 +3,7 @@ const { validateBody } = require('../utils/validators');
 
 const NewLogin = () => ({
   userName: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^[a-zA-Z-\s]+$/,
       message: () => 'input not valid',
@@ -15,7 +15,7 @@ const NewLogin = () => ({
     type: 'string',
   },
   oldPassword: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_?])[A-Za-z\d@$!%*?&\-_?]{8,}$/,
       message: () => 'input not valid',
@@ -27,27 +27,29 @@ const NewLogin = () => ({
     type: 'string',
   },
   newPassword: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_?])[A-Za-z\d@$!%*?&\-_?]{8,}$/,
-      message: () => 'input not valid. please make sure you have 1 numeric, lowercase, uppecase and special character.',
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_?])[A-Za-z\d@$!%*?&\-_?]{10,}$/,
+      message: () => 'input not valid',
     },
     length: {
-      minimum: 8,
+      minimum: 10 ,
       maximum: 64,
     },
+    type: 'string',
   },
   confirmPassword: {
-    presence: true,
+    presence: { allowEmpty: false },
     equality: 'newPassword',
   },
 });
 
 const create = async (credentials) => {
-  const newLogin = await validateBody(credentials, NewLogin)
-    .then(({ userName, newPassword }) => ({
-      userName, password: argon2.hash(newPassword),
-    }));
+  const newLogin = await validateBody(credentials, NewLogin())
+    .then(async ({ userName, newPassword }) => {
+      const password = await argon2.hash(newPassword);
+      return { password, userName };
+    }).catch((error) => ({ error }));
   if (newLogin.error) {
     return Promise.reject(newLogin);
   }

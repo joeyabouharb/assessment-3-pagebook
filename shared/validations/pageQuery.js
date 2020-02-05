@@ -2,7 +2,9 @@ const constraints = {
   pageName: {
     format: {
       pattern: /^[\w\s0-9-_!:'".]+$/,
-      message: () => 'contains invalid characters, only alphanumeric letters and standard punctuation',
+      message: () => (
+        'contains invalid characters, only alphanumeric letters and standard punctuation'
+      ),
       length: {
         minimum: 1,
         maximum: 40,

@@ -1,15 +1,30 @@
 const { Router } = require('express');
 const PageController = require('../controllers/pages');
 const { requiresValidation } = require('../utils/validators');
-const PageQuery = require('../models/pageQuery');
+const { authorizeAccessToPage } = require('../utils/auth');
 const Page = require('../models/page');
+const GuestController = require('../controllers/guest');
 
 const pageRouter = Router();
 
-pageRouter.get('/', requiresValidation(PageQuery), PageController.getPages);
-pageRouter.get('/:id/', PageController.getPageDetails);
-pageRouter.post('/', requiresValidation(Page), PageController.createPage);
-pageRouter.patch('/:id', requiresValidation(Page), PageController.updatePage);
-pageRouter.delete('/:id/', PageController.deletePage);
+pageRouter.post(
+  '/',
+  requiresValidation(Page),
+  authorizeAccessToPage,
+  PageController.createPage,
+);
+pageRouter.patch(
+  '/:pageID',
+  requiresValidation(Page),
+  authorizeAccessToPage,
+  PageController.updatePage,
+);
+pageRouter.delete(
+  '/:pageID',
+  authorizeAccessToPage,
+  PageController.deletePage,
+);
 
+pageRouter.get('/', PageController.getManagedPages);
+pageRouter.get('/:pageID', GuestController.getPageDetails);
 module.exports = Object.freeze(pageRouter);

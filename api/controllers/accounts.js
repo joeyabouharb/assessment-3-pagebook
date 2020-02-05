@@ -3,7 +3,7 @@ const AccountRepository = require('../repository/AccountRepository');
 
 const login = async (req, res) => {
   const accountRepository = AccountRepository();
-  const { Login } = req;
+  const { model: Login } = req;
   const result = await accountRepository.login(Login);
   accountRepository.close();
   if (result.error) {
@@ -20,22 +20,22 @@ const login = async (req, res) => {
 
 const register = (req, res) => {
   const accountRepository = AccountRepository();
-  const { Account } = req;
+  const { model: Account } = req;
   const result = accountRepository.register(Account);
   accountRepository.close();
   if (result.error) {
     return res.status(result.status).json(result);
   }
-  return res.json({ result });
+  return res.json({ result: true, id: Account.accountID });
 };
 
 const deleteAccount = (req, res) => {
   const accountRepository = AccountRepository();
-  const { id: pageID } = req.params;
-  const result = accountRepository.deleteAccount({ pageID });
+  const { token } = req.user;
+  const result = accountRepository.deleteAccount(token);
   accountRepository.close();
   if (result.error || !result) {
-    return res.status(result.status).json(result);
+    return res.status(400).json(result);
   }
   return res.json({
     result: 'success!',
@@ -43,14 +43,14 @@ const deleteAccount = (req, res) => {
 };
 
 const updateAccount = (req, res) => {
-  const { accountID } = req.user;
-  const { Account } = req;
-  Account.accountID = accountID;
+  const { model: Account } = req;
+  const { token } = req.user;
+  Account.token = token;
   const accountRepository = AccountRepository();
   const account = accountRepository.updateAccountDetails(Account);
   accountRepository.close();
   if (account.error) {
-    return res.status(account.status).json(account);
+    return res.status(400).json(account);
   }
   return res.json({ success: true });
 };
@@ -70,10 +70,10 @@ const getUserDetails = (req, res) => {
 };
 
 const changeUserPassword = (req, res) => {
-  const { accountID } = req.user;
-  const { NewLogin } = req;
+  const { token } = req.user;
+  const { model: NewLogin } = req;
   const accountRepository = AccountRepository();
-  const result = accountRepository.changeUserPassword({ ...NewLogin, accountID });
+  const result = accountRepository.updateAccountPassword({ ...NewLogin, token });
   if (result.error) {
     return res.send(result.status).json(result);
   }

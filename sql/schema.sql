@@ -39,6 +39,7 @@ CREATE TABLE PostAnalysis (
 	postID TEXT NOT NULL UNIQUE,
 	results TEXT NOT NULL,
 	confidence INTEGER NOT NULL,
+	estimatedLikes INTEGER NOT NULL,
 	FOREIGN KEY(postID)
 		REFERENCES Posts(postID),
 	CHECK (confidence >= 0 and confidence <= 5),

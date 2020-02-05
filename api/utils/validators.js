@@ -5,14 +5,15 @@ const validate = require('validate.js');
  * @param {object} Entity
  */
 const requiresValidation = (Entity) => (req, res, next) => {
-  const { user } = req;
-  Entity.create({ ...req.body }, user)
+  Entity.create({ ...req.body }, { ...req.params, ...req.user })
     .then((entity) => {
-      req[Entity.name] = entity;
-      next();
+      req.model = entity;
+      return next();
     })
     .catch((err) => {
-      res.status(400).json(err);
+      // eslint-disable-next-line no-console
+      console.log(err.message);
+      res.status(400).json({ err });
     });
 };
 /**
@@ -23,7 +24,13 @@ const requiresValidation = (Entity) => (req, res, next) => {
 const validateBody = async (body, constraints) => {
   const result = await validate.async({ ...body }, constraints)
     .then((data) => validate.cleanAttributes(data, constraints))
-    .catch((error) => ({ error, status: 400 }));
+    .catch((error) => ({ error }));
+  return result;
+};
+
+const queryValidation = async (body, constraints) => {
+  const result = await validate.async({ ...body }, constraints)
+    .catch((error) => ({ error }));
   return result;
 };
 
@@ -42,4 +49,5 @@ module.exports = Object.freeze({
   requiresValidation,
   validateBody,
   validateQuery,
+  queryValidation,
 });

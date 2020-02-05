@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 const fs = require('fs');
 const pagesDBClient = require('../api/repository/DatabaseClient');
+const seed = require('./seed');
 
 const readFile = (filename) => new Promise((resolve, reject) => {
   fs.readFile(filename, (err, data) => {
@@ -32,8 +34,9 @@ const down = async (file) => {
   return message;
 };
 
-const seed = () => {
-
+const backup = (file) => {
+  const result = pagesDBClient(file).backup();
+  return result;
 };
 
 const commandList = async () => {
@@ -47,7 +50,7 @@ const commandList = async () => {
   return msg.join('\n');
 };
 
-const exec = () => {
+const exec = async () => {
   const command = process.argv[2];
   const file = process.argv[3];
   if (command === '--up') {
@@ -60,10 +63,11 @@ const exec = () => {
     return down(file);
   }
   if (command === '--seed') {
-    const mockup = process.argv[4];
-    return !mockup
-      ? commandList()
-      : seed(file, mockup);
+    await seed();
+    return 'Success';
+  }
+  if (command === '--backup') {
+    return backup(file);
   }
   return commandList();
 };

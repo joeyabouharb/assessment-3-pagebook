@@ -1,22 +1,19 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /**
  * Creates a connection to a database to handle read/write access.
  *
  */
-const SqliteDB = require('better-sqlite3');
-
+const SqliteDB = Object.freeze(require('better-sqlite3'));
 /**
  * factory function:
  *
  * produces a connection to an SQL database with basic CRUD operations
  * @param {string} connection
  */
-const dbClient = (connection = './pages.db', key = 'MYSECRETPASSKEY') => {
+const dbClient = (connection = './pages.db') => {
   const client = new SqliteDB(connection);
-  client.pragma(`KEY = ${key}`);
 
-  // load up regular expression server into sqlite
-  // client.loadExtension('/usr/lib/sqlite3/pcre.so');
   /**
    * insert new entry into database
    * @param {string} sql
@@ -30,10 +27,7 @@ const dbClient = (connection = './pages.db', key = 'MYSECRETPASSKEY') => {
         .run(params);
     } catch (error) {
       console.log(error);
-      const { code, message } = error;
-      // const [, errorOn] = message.split(': ');
-      // const [, column] = errorOn.split('.');
-      return { error: code, column: message, status: 400 };
+      return { error, status: 400 };
     }
   };
 
@@ -75,14 +69,14 @@ const dbClient = (connection = './pages.db', key = 'MYSECRETPASSKEY') => {
    * @param {string} sql
    * @param {object} params
    */
-  const getAll = (sql, { offset, limit, ...pageParams }) => {
+  const getAll = (sql, params) => {
     try {
       const query = client.prepare(sql);
-      const results = query.all({ ...pageParams, limit, offset });
-      return results.length > 0 ? results : { error: (entity) => `${entity}s not found`, status: 404 };
+      const results = query.all(params);
+      return results.length > 0 ? results : { error: 'not found', status: 404 };
     } catch (error) {
       console.log(error);
-      return { error: 'something bad happenned during the transaction', code: 400 };
+      return { error: 'something bad happenned during the transaction', status: 400 };
     }
   };
 
@@ -109,13 +103,33 @@ const dbClient = (connection = './pages.db', key = 'MYSECRETPASSKEY') => {
     }
   };
 
-  return {
+  const backup = async () => {
+    const result = await client.backup('./sql/data.sql')
+      .catch((err) => err);
+    return result;
+  };
+  const batchModify = (sql, data) => new Promise((resolve, reject) => {
+    try {
+      const query = client.prepare(sql);
+      const execAll = client.transaction((items) => {
+        for (const item of items) query.run(item);
+      });
+      const result = execAll(data);
+      resolve(result);
+    } catch (err) {
+      reject(err);
+    }
+  });
+
+  return Object.freeze({
     getOne,
     getAll,
     modify,
     execute,
     close,
     aggregate,
-  };
+    backup,
+    batchModify,
+  });
 };
 module.exports = Object.freeze(dbClient);

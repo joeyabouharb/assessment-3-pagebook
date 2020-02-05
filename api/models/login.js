@@ -2,7 +2,7 @@ const { validateBody } = require('../utils/validators');
 
 const Login = () => ({
   userName: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^[a-zA-Z-\s]+$/,
       message: () => 'input not valid',
@@ -14,7 +14,7 @@ const Login = () => ({
     type: 'string',
   },
   password: {
-    presence: true,
+    presence: { allowEmpty: false },
     format: {
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_?])[A-Za-z\d@$!%*?&\-_?]{8,}$/,
       message: () => 'input not valid',

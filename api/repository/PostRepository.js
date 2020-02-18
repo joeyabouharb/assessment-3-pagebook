@@ -1,4 +1,4 @@
-const DatabaseClient = require('./DatabaseClient');
+const DatabaseClient = require('./DatabaseClient').pagesDb;
 
 const PostRepository = () => {
   const client = DatabaseClient();
@@ -68,11 +68,12 @@ const PostRepository = () => {
 
   const getPublished = (pageID) => {
     const sql = `
-    SELECT po.postContent, po.postCreated
+    SELECT po.postID, po.postContent, po.postCreated
     FROM Posts po
     INNER JOIN Pages pa
-    ON pa.pageID == $pageID
-    WHERE po.isPublished == '0'
+    ON pa.pageID == po.pageID
+    WHERE po.isPublished == '1'
+    AND po.pageID = $pageID
     ORDER BY po.postCreated
     `;
     const result = client.getAll(sql, { pageID });

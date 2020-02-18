@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const fs = require('fs');
-const pagesDBClient = require('../api/repository/DatabaseClient');
+require('dotenv').load();
+const pagesDBClient = require('../api/repository/DatabaseClient').pagesDb;
 const seed = require('./seed');
 
 const readFile = (filename) => new Promise((resolve, reject) => {

@@ -1,4 +1,4 @@
-const DatabaseClient = require('./DatabaseClient');
+const DatabaseClient = require('./DatabaseClient').pagesDb;
 
 const pageRepository = () => {
   const client = DatabaseClient();

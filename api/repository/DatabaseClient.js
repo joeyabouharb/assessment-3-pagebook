@@ -5,14 +5,15 @@
  *
  */
 const SqliteDB = Object.freeze(require('better-sqlite3'));
+
 /**
  * factory function:
  *
  * produces a connection to an SQL database with basic CRUD operations
  * @param {string} connection
  */
-const dbClient = (connection = './pages.db') => {
-  const client = new SqliteDB(connection);
+const dbClient = (connectionString) => {
+  const client = new SqliteDB(connectionString);
 
   /**
    * insert new entry into database
@@ -132,4 +133,6 @@ const dbClient = (connection = './pages.db') => {
     batchModify,
   });
 };
-module.exports = Object.freeze(dbClient);
+module.exports = Object.freeze({
+  pagesDb: () => dbClient(process.env.PAGES_DB),
+});

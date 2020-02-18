@@ -78,8 +78,13 @@ const seed = async () => {
     .then(() => console.log('success'))
     .catch(console.error);
 
-  await postRepository.createBatchPostAnalysis(analyses).catch(console.error);
-  await pageRepository.addFollowers(followers).catch(console.error);
+  await postRepository.createBatchPostAnalysis(analyses)
+    .then(() => { console.log('success'); })
+    .catch(console.error);
+
+  await pageRepository.addFollowers(followers)
+    .then(() => { console.log('success') })
+    .catch(console.error);
 };
 
 module.exports = Object.freeze(seed);

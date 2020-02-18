@@ -13,12 +13,14 @@ pageRouter.post(
   authorizeAccessToPage,
   PageController.createPage,
 );
+
 pageRouter.patch(
   '/:pageID',
   requiresValidation(Page),
   authorizeAccessToPage,
   PageController.updatePage,
 );
+
 pageRouter.delete(
   '/:pageID',
   authorizeAccessToPage,

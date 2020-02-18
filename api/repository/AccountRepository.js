@@ -1,5 +1,5 @@
 const argon2 = require('argon2');
-const pagesDBClient = require('./DatabaseClient');
+const pagesDBClient = require('./DatabaseClient').pagesDb;
 
 /**
  *

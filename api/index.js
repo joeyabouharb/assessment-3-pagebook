@@ -6,10 +6,10 @@ const postRoute = require('./routes/posts');
 const guestPageRoute = require('./routes/guest');
 const { authNeeded } = require('./utils/auth');
 const PageRepository = require('./repository/PageRepository');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 1234;
 const HOST = process.env.HOST || 'localhost';
-
 const app = express();
 app.use(helmet());
 app.use(express.json());
@@ -33,8 +33,10 @@ app.use('/api/accounts/:accountID/pages',
   authNeeded, pageRoute);
 app.use('/api/accounts/:accountID/pages/:pageID/posts',
   authNeeded, postRoute);
-app.use('/api/accounts', accountRoute);
-app.use('/api/pages', guestPageRoute);
+app.use('/api/accounts',
+  accountRoute);
+app.use('/api/pages',
+  guestPageRoute);
 
 app.get('/', (req, res) => {
   const pageRepository = PageRepository();
@@ -55,6 +57,7 @@ app.get('/', (req, res) => {
       max-width: 150px; word-wrap: break-word; padding:1rem;">
         ${value}
       </li>`, '');
+
     return [
       ...domList,
       `<ul
@@ -83,10 +86,9 @@ app.use((_, res) => {
   res.status(404);
   res.json({ error: 'requested resource Not Found!' });
 });
+
 app.listen(
-  PORT,
-  HOST,
-  () => process.stdout.write(
+  PORT, HOST, () => process.stdout.write(
     `\nlistening on http://${HOST}:${PORT}\n`,
   ),
 );
